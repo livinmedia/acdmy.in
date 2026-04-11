@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ACDMY.in — App Mockup v2</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #0b1017;
+  --bg-card: #111820;
+  --bg-card-hover: #151d28;
+  --surface: #1a2332;
+  --surface-2: #1e2a3a;
+  --border: #1e2a3a;
+  --border-hover: #2a3a4e;
+  --text: #e8edf3;
+  --text-dim: #8899aa;
+  --text-muted: #556677;
+  --teal: #2dd4a8;
+  --teal-dim: rgba(45,212,168,0.1);
+  --teal-border: rgba(45,212,168,0.2);
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,0.1);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245,158,11,0.1);
+  --red: #ef4444;
+  --red-dim: rgba(239,68,68,0.1);
+  --blue: #3b82f6;
+  --blue-dim: rgba(59,130,246,0.1);
+  --purple: #a855f7;
+  --purple-dim: rgba(168,85,247,0.1);
+  --pink: #ec4899;
+  --pink-dim: rgba(236,72,153,0.1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  height: 100vh; overflow: hidden;
+}
+
+.app { display: flex; height: 100vh; }
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width: 48px; background: var(--bg-card);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; align-items: center;
+  padding: 10px 0; gap: 2px; flex-shrink: 0;
+}
+.sidebar-logo {
+  width: 34px; height: 34px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--teal), #0ea5e9);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; color: var(--bg);
+  margin-bottom: 12px; cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+}
+.sidebar-icon {
+  width: 36px; height: 36px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; cursor: pointer; position: relative;
+  transition: background 0.15s;
+  color: var(--text-muted);
+}
+.sidebar-icon:hover { background: var(--surface); color: var(--text-dim); }
+.sidebar-icon.active { background: var(--teal-dim); color: var(--teal); }
+.sidebar-icon .notif {
+  position: absolute; top: 4px; right: 4px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--red); color: white;
+  font-size: 9px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.sidebar-spacer { flex: 1; }
+.sidebar-avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--teal), var(--blue));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600; cursor: pointer;
+}
+
+/* ===== MAIN ===== */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+.content { flex: 1; overflow-y: auto; }
+
+/* Page toggle */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ===== UNIVERSITY PAGE ===== */
+.uni-header {
+  padding: 28px 24px 0;
+}
+.uni-title {
+  font-size: 24px; font-weight: 700;
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 4px;
+}
+.uni-subtitle { font-size: 14px; color: var(--text-dim); margin-bottom: 20px; }
+
+.uni-tabs {
+  display: flex; gap: 4px; padding: 0 24px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+  overflow-x: auto;
+}
+.uni-tab {
+  padding: 10px 18px; font-size: 14px; font-weight: 500;
+  color: var(--text-dim); cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s; position: relative; top: 1px;
+}
+.uni-tab:hover { color: var(--text); }
+.uni-tab.active { color: var(--teal); border-bottom-color: var(--teal); }
+
+.course-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 14px; padding: 0 24px 40px;
+}
+
+.course-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px; overflow: hidden;
+  cursor: pointer; transition: all 0.2s;
+}
+.course-card:hover { border-color: var(--border-hover); background: var(--bg-card-hover); }
+
+.course-cover {
+  height: 110px; position: relative;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface);
+}
+.course-cover img {
+  width: 60px; height: 60px; object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+}
+.course-cover .emoji { font-size: 42px; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3)); }
+.course-cover .cover-bg {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+  opacity: 0.7;
+}
+.course-badge {
+  position: absolute; top: 10px; left: 10px;
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 4px; letter-spacing: 0.04em;
+}
+.badge-new { background: var(--teal); color: var(--bg); }
+.badge-progress { background: var(--amber); color: var(--bg); }
+.badge-done { background: var(--green); color: var(--bg); }
+
+.course-info { padding: 12px 14px; }
+.course-name { font-size: 14px; font-weight: 600; margin-bottom: 8px; line-height: 1.3; }
+.course-meta {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 14px;
+}
+.meta-chip {
+  font-size: 12px; padding: 3px 10px; border-radius: 6px;
+  background: var(--surface); color: var(--text-dim);
+}
+.meta-text { font-size: 13px; color: var(--text-muted); }
+
+.course-action {
+  font-size: 14px; font-weight: 600; color: var(--teal);
+  display: flex; align-items: center; gap: 4px;
+  cursor: pointer; transition: gap 0.2s;
+}
+.course-card:hover .course-action { gap: 8px; }
+
+/* Progress bar on card */
+.card-progress { height: 3px; background: var(--surface); }
+.card-progress-fill { height: 100%; background: var(--teal); }
+
+/* ===== COMMUNITY PAGE ===== */
+.comm-header { padding: 24px 40px 0; }
+.comm-tabs {
+  display: flex; gap: 2px; align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  overflow-x: auto;
+}
+.comm-tab {
+  padding: 12px 18px; font-size: 14px; font-weight: 500;
+  color: var(--text-dim); cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s; position: relative; top: 1px;
+  display: flex; align-items: center; gap: 6px;
+}
+.comm-tab:hover { color: var(--text); }
+.comm-tab.active { color: var(--teal); border-bottom-color: var(--teal); }
+.comm-tab-spacer { flex: 1; }
+.streak-badge {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 14px; font-weight: 600; color: var(--amber);
+  padding: 6px 14px; border-radius: 20px;
+  background: var(--amber-dim);
+  position: relative; top: -1px;
+}
+
+.comm-layout {
+  display: grid; grid-template-columns: 1fr 260px;
+  gap: 16px; padding: 16px 24px 40px;
+}
+
+/* Composer */
+.composer {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 18px; margin-bottom: 18px;
+}
+.composer-top { display: flex; gap: 12px; margin-bottom: 14px; }
+.composer-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--surface);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; flex-shrink: 0;
+}
+.composer-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.composer-input {
+  flex: 1; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 14px; font-family: 'DM Sans', sans-serif;
+  font-size: 14px; color: var(--text); outline: none; resize: none;
+  min-height: 60px;
+}
+.composer-input::placeholder { color: var(--text-muted); }
+.composer-bottom { display: flex; align-items: center; gap: 6px; }
+.type-btn {
+  font-size: 12px; font-weight: 600; padding: 5px 12px;
+  border-radius: 6px; cursor: pointer; border: none;
+  display: flex; align-items: center; gap: 4px;
+  transition: all 0.15s; background: var(--surface); color: var(--text-dim);
+}
+.type-btn:hover { background: var(--surface-2); }
+.type-btn.active-win { background: var(--green-dim); color: var(--green); }
+.type-btn.active-checkin { background: var(--blue-dim); color: var(--blue); }
+.type-btn.active-question { background: var(--amber-dim); color: var(--amber); }
+.type-btn.active-tip { background: var(--purple-dim); color: var(--purple); }
+.composer-spacer { flex: 1; }
+.post-btn {
+  background: var(--teal); color: var(--bg); border: none;
+  border-radius: 8px; padding: 8px 24px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: background 0.15s;
+}
+.post-btn:hover { background: #3ee6b8; }
+
+/* Feed filters */
+.feed-filters { display: flex; gap: 6px; margin-bottom: 18px; }
+.feed-filter {
+  font-size: 13px; padding: 6px 14px; border-radius: 20px;
+  background: transparent; border: 1px solid var(--border);
+  color: var(--text-dim); cursor: pointer; transition: all 0.15s;
+  display: flex; align-items: center; gap: 4px;
+}
+.feed-filter:hover { border-color: var(--border-hover); color: var(--text); }
+.feed-filter.active { background: var(--teal-dim); border-color: var(--teal-border); color: var(--teal); }
+
+/* Posts */
+.post {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 18px; margin-bottom: 14px;
+  transition: border-color 0.2s;
+}
+.post:hover { border-color: var(--border-hover); }
+.post.pinned { border-color: var(--teal-border); }
+.pinned-label {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 12px; font-weight: 600; color: var(--red);
+  margin-bottom: 12px;
+}
+.post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.post-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600; flex-shrink: 0;
+  overflow: hidden;
+}
+.post-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.post-info { flex: 1; }
+.post-name {
+  font-size: 14px; font-weight: 600;
+  display: flex; align-items: center; gap: 8px;
+}
+.ai-badge {
+  font-size: 10px; font-weight: 700; background: var(--teal);
+  color: var(--bg); padding: 1px 6px; border-radius: 4px;
+}
+.post-type-badge {
+  font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px;
+}
+.ptb-tip { background: var(--purple-dim); color: var(--purple); }
+.ptb-win { background: var(--green-dim); color: var(--green); }
+.ptb-question { background: var(--amber-dim); color: var(--amber); }
+.ptb-showcase { background: var(--pink-dim); color: var(--pink); }
+.ptb-pinned { background: var(--red-dim); color: var(--red); }
+.post-time { font-size: 12px; color: var(--text-muted); }
+.post-body { font-size: 14px; line-height: 1.65; color: var(--text-dim); }
+.post-body strong { color: var(--text); }
+.post-body .mention { color: var(--teal); font-weight: 500; }
+.post-footer { display: flex; gap: 16px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
+.post-action {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 13px; color: var(--text-muted);
+  cursor: pointer; transition: color 0.15s;
+}
+.post-action:hover { color: var(--text); }
+.post-action.liked { color: var(--red); }
+
+/* Sidebar widgets */
+.widget {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 12px; overflow: hidden; margin-bottom: 16px;
+}
+.widget-header {
+  padding: 14px 16px; font-size: 15px; font-weight: 600;
+  display: flex; align-items: center; gap: 8px;
+}
+.widget-item {
+  padding: 10px 16px; border-top: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+  transition: background 0.15s; cursor: pointer;
+}
+.widget-item:hover { background: var(--surface); }
+.wi-icon { color: var(--text-muted); font-size: 14px; }
+.wi-text { font-size: 13px; color: var(--text-dim); flex: 1; }
+.wi-time { font-size: 11px; color: var(--text-muted); }
+
+/* Top contributors */
+.contrib-row {
+  padding: 10px 16px; border-top: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.contrib-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600;
+}
+.contrib-name { flex: 1; font-size: 13px; }
+.contrib-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; font-weight: 500; color: var(--teal);
+}
+
+/* Challenges widget */
+.challenge-row {
+  padding: 10px 16px; border-top: 1px solid var(--border);
+  font-size: 13px; color: var(--text-dim);
+}
+.no-challenges { padding: 14px 16px; border-top: 1px solid var(--border); font-size: 13px; color: var(--text-muted); }
+
+/* Community stats */
+.stats-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+  background: var(--border); border-top: 1px solid var(--border);
+}
+.stat-cell {
+  background: var(--bg-card); padding: 14px 16px; text-align: center;
+}
+.stat-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 20px; font-weight: 600; color: var(--text);
+}
+.stat-label { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+/* Widget accent borders */
+.widget.teal-accent { border-color: var(--teal-border); }
+.widget.amber-accent { border-color: rgba(245,158,11,0.2); }
+.widget.green-accent { border-color: rgba(34,197,94,0.2); }
+.widget.blue-accent { border-color: rgba(59,130,246,0.2); }
+
+/* Animations */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.course-card, .post, .widget { animation: fadeIn 0.3s ease both; }
+
+/* Responsive */
+@media (max-width: 900px) { .course-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) {
+  .sidebar { display: none; }
+  .comm-layout { grid-template-columns: 1fr; }
+  .course-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- SIDEBAR (icon-only like RKRT) -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">A</div>
+    <div class="sidebar-icon" onclick="showPage('university')" title="Courses">📚</div>
+    <div class="sidebar-icon" title="Search">🔍</div>
+    <div class="sidebar-icon" title="Pipeline">📋</div>
+    <div class="sidebar-icon" title="Content">📝</div>
+    <div class="sidebar-icon active" onclick="showPage('community')" title="Community">
+      💬
+      <div class="notif">2</div>
+    </div>
+    <div class="sidebar-icon" title="Mentor">🤖</div>
+    <div class="sidebar-icon" title="Certificates">🏅</div>
+    <div class="sidebar-spacer"></div>
+    <div class="sidebar-icon" title="Notifications">
+      🔔
+      <div class="notif" style="background:var(--amber)">9+</div>
+    </div>
+    <div class="sidebar-avatar">AD</div>
+  </nav>
+
+  <div class="main">
+    <div class="content">
+
+      <!-- ===== UNIVERSITY PAGE ===== -->
+      <div class="page active" id="page-university">
+        <div class="uni-header">
+          <div class="uni-title">📚 ACDMY University</div>
+          <div class="uni-subtitle">AI-powered courses with interactive exercises · New course every day</div>
+        </div>
+
+        <div class="uni-tabs">
+          <div class="uni-tab active">All Courses</div>
+          <div class="uni-tab">In Progress</div>
+          <div class="uni-tab">Completed</div>
+          <div class="uni-tab">Prompt Engineering</div>
+          <div class="uni-tab">AI Agents</div>
+          <div class="uni-tab">Business</div>
+          <div class="uni-tab">Tools</div>
+        </div>
+
+        <div class="course-grid">
+          <!-- Course 1: TODAY -->
+          <div class="course-card" onclick="showPage('community')">
+            <div class="course-cover" style="background:linear-gradient(135deg,#1a1040,#2d1b69)">
+              <div class="emoji">🧠</div>
+              <div class="course-badge badge-new">NEW TODAY</div>
+            </div>
+            <div class="course-info">
+              <div class="course-name">Claude System Prompts That Actually Work</div>
+              <div class="course-meta">
+                <div class="meta-chip">intermediate</div>
+                <div class="meta-text">~35 min · 5 lessons</div>
+              </div>
+              <div class="course-action">Start Course →</div>
+            </div>
+          </div>
+
+          <!-- Course 2: In Progress -->
+          <div class="course-card">
+            <div class="course-cover" style="background:linear-gradient(135deg,#0a2a1e,#134e3a)">
+              <div class="emoji">⚡</div>
+              <div class="course-badge badge-progress">IN PROGRESS</div>
+            </div>
+            <div class="card-progress"><div class="card-progress-fill" style="width:60%"></div></div>
+            <div class="course-info">
+              <div class="course-name">Build Your First AI Agent in 30 Minutes</div>
+              <div class="course-meta">
+                <div class="meta-chip">beginner</div>
+                <div class="meta-text">~30 min · 5 lessons</div>
+              </div>
+              <div class="course-action">Continue →</div>
+            </div>
+          </div>
+
+          <!-- Course 3: Completed -->
+          <div class="course-card">
+            <div class="course-cover" style="background:linear-gradient(135deg,#2a1a0a,#4a2a10)">
+              <div class="emoji">📊</div>
+              <div class="course-badge badge-done">✓ COMPLETED</div>
+            </div>
+            <div class="course-info">
+              <div class="course-name">AI-Powered Content Machines</div>
+              <div class="course-meta">
+                <div class="meta-chip">intermediate</div>
+                <div class="meta-text">~40 min · 5 lessons</div>
+              </div>
+              <div class="course-action">Review Course →</div>
+            </div>
+          </div>
+
+          <!-- Course 4 -->
+          <div class="course-card">
+            <div class="course-cover" style="background:linear-gradient(135deg,#1a0a2a,#3a1060)">
+              <div class="emoji">🔗</div>
+              <div class="course-badge badge-new">NEW</div>
+            </div>
+            <div class="course-info">
+              <div class="course-name">MCP Servers: Connect AI to Everything</div>
+              <div class="course-meta">
+                <div class="meta-chip">advanced</div>
+                <div class="meta-text">~45 min · 5 lessons</div>
+              </div>
+              <div class="course-action">Start Course →</div>
+            </div>
+          </div>
+
+          <!-- Course 5 -->
+          <div class="course-card">
+            <div class="course-cover" style="background: linear-gradient(135deg,#0a1a2a,#103060)">
+              <div class="emoji">🛠</div>
+            </div>
+            <div class="card-progress"><div class="card-progress-fill" style="width:20%"></div></div>
+            <div class="course-info">
+              <div class="course-name">Cursor AI: From Zero to Power User</div>
+              <div class="course-meta">
+                <div class="meta-chip">beginner</div>
+                <div class="meta-text">~25 min · 5 lessons</div>
+              </div>
+              <div class="course-action">Continue →</div>
+            </div>
+          </div>
+
+          <!-- Course 6 -->
+          <div class="course-card">
+            <div class="course-cover" style="background:linear-gradient(135deg,#2a0a0a,#601020)">
+              <div class="emoji">🔥</div>
+              <div class="course-badge badge-new">NEW</div>
+            </div>
+            <div class="course-info">
+              <div class="course-name">Automate Everything with n8n + AI</div>
+              <div class="course-meta">
+                <div class="meta-chip">intermediate</div>
+                <div class="meta-text">~35 min · 5 lessons</div>
+              </div>
+              <div class="course-action">Start Course →</div>
+            </div>
+          </div>
+
+          <!-- Course 7 -->
+          <div class="course-card">
+            <div class="course-cover" style="background:linear-gradient(135deg,#0a2a2a,#0e4040)">
+              <div class="emoji">💰</div>
+            </div>
+            <div class="course-info">
+              <div class="course-name">Ship an AI SaaS in a Weekend</div>
+              <div class="course-meta">
+                <div class="meta-chip">advanced</div>
+                <div class="meta-text">~60 min · 5 lessons</div>
+              </div>
+              <div class="course-action">Start Course →</div>
+            </div>
+          </div>
+
+          <!-- Course 8 -->
+          <div class="course-card">
+            <div class="course-cover" style="background:linear-gradient(135deg,#1a1a0a,#3a3a10)">
+              <div class="emoji">🎨</div>
+            </div>
+            <div class="course-info">
+              <div class="course-name">AI Image Generation: Ideogram, DALL-E & Midjourney</div>
+              <div class="course-meta">
+                <div class="meta-chip">beginner</div>
+                <div class="meta-text">~30 min · 5 lessons</div>
+              </div>
+              <div class="course-action">Start Course →</div>
+            </div>
+          </div>
+
+          <!-- Course 9 -->
+          <div class="course-card">
+            <div class="course-cover" style="background:linear-gradient(135deg,#1a0a1a,#400a40)">
+              <div class="emoji">🧬</div>
+            </div>
+            <div class="course-info">
+              <div class="course-name">Multi-Agent Systems: Orchestrate an AI Fleet</div>
+              <div class="course-meta">
+                <div class="meta-chip">advanced</div>
+                <div class="meta-text">~50 min · 5 lessons</div>
+              </div>
+              <div class="course-action">Start Course →</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== COMMUNITY PAGE ===== -->
+      <div class="page" id="page-community">
+        <div class="comm-header"></div>
+        <div class="comm-tabs">
+          <div class="comm-tab">ACDMY Community</div>
+          <div class="comm-tab active">📡 Feed</div>
+          <div class="comm-tab">🏆 Challenges</div>
+          <div class="comm-tab">👥 Members</div>
+          <div class="comm-tab-spacer"></div>
+          <div class="streak-badge">🔥 12d streak</div>
+          <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--blue));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;cursor:pointer;margin-left:8px">AD</div>
+        </div>
+
+        <div class="comm-layout">
+          <div class="feed-col">
+            <!-- Composer -->
+            <div class="composer">
+              <div class="composer-top">
+                <div class="composer-avatar" style="background:linear-gradient(135deg,var(--teal),var(--blue));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">AD</div>
+                <textarea class="composer-input" placeholder="Share a win, drop a tip, ask the group... (type @ to mention someone)"></textarea>
+              </div>
+              <div class="composer-bottom">
+                <button class="type-btn active-win">🏆 WIN</button>
+                <button class="type-btn">📋 CHECK-IN</button>
+                <button class="type-btn">❓ QUESTION</button>
+                <button class="type-btn">💡 TIP</button>
+                <button class="type-btn">📸 Photo</button>
+                <div class="composer-spacer"></div>
+                <button class="post-btn">Post</button>
+              </div>
+            </div>
+
+            <!-- Feed filters -->
+            <div class="feed-filters">
+              <div class="feed-filter active">All</div>
+              <div class="feed-filter">🏆 Wins</div>
+              <div class="feed-filter">❓ Questions</div>
+              <div class="feed-filter">📋 Check-Ins</div>
+              <div class="feed-filter">💡 Tips</div>
+            </div>
+
+            <!-- Pinned Post -->
+            <div class="post pinned">
+              <div class="pinned-label">📌 PINNED</div>
+              <div class="post-header">
+                <div class="post-avatar" style="background:linear-gradient(135deg,var(--teal),#0ea5e9)">🤖</div>
+                <div class="post-info">
+                  <div class="post-name">
+                    ACDMY Mentor
+                    <span class="ai-badge">AI</span>
+                    <span class="post-type-badge ptb-tip">💡 Tip</span>
+                    <span class="post-type-badge ptb-pinned">📌 Pinned</span>
+                  </div>
+                  <div class="post-time">8h ago</div>
+                </div>
+              </div>
+              <div class="post-body">
+                <span class="mention">@everyone</span> Good morning, ACDMY community! It's Saturday, April 11, and I'm pumped to kick off the weekend with our awesome group of 47 learners! 🎉<br><br>
+                <strong>Today's new course:</strong> "Claude System Prompts That Actually Work" — covers structured outputs, chain-of-thought, and tool use patterns.<br><br>
+                Shoutouts to <span class="mention">Anthony Dazet</span>, <span class="mention">Sarah Chen</span>, and <span class="mention">Marcus Rivera</span> for crushing it this week! 🔥<br><br>
+                This week we've had <strong>12 courses completed</strong> and <strong>8 community posts</strong>. What's one goal you're setting for yourself this weekend? Let's hear it! 💪
+              </div>
+              <div class="post-footer">
+                <div class="post-action liked">❤️ 14</div>
+                <div class="post-action">💬 6</div>
+                <div class="post-action">🔖 Save</div>
+              </div>
+            </div>
+
+            <!-- Post 2 -->
+            <div class="post">
+              <div class="post-header">
+                <div class="post-avatar" style="background:linear-gradient(135deg,#60a5fa,#34d399)">SC</div>
+                <div class="post-info">
+                  <div class="post-name">
+                    Sarah Chen
+                    <span class="post-type-badge ptb-win">🏆 Win</span>
+                  </div>
+                  <div class="post-time">2h ago</div>
+                </div>
+              </div>
+              <div class="post-body">
+                Just finished the "AI-Powered Content Machines" course and immediately built a pipeline that auto-generates 5 LinkedIn posts per week for my consulting business. Took me 2 hours total. The exercises in Lesson 4 were the key — actually building the pipeline step by step instead of just reading about it. This platform is unreal. 🚀
+              </div>
+              <div class="post-footer">
+                <div class="post-action liked">❤️ 18</div>
+                <div class="post-action">💬 7</div>
+                <div class="post-action">🔖 Save</div>
+              </div>
+            </div>
+
+            <!-- Post 3 -->
+            <div class="post">
+              <div class="post-header">
+                <div class="post-avatar" style="background:linear-gradient(135deg,#fbbf24,#fb7185)">MR</div>
+                <div class="post-info">
+                  <div class="post-name">
+                    Marcus Rivera
+                    <span class="post-type-badge ptb-question">❓ Question</span>
+                  </div>
+                  <div class="post-time">4h ago</div>
+                </div>
+              </div>
+              <div class="post-body">
+                New here! Working through the AI Agents course — Lesson 2 on tool calling. When building agents, is it better to define tools inline or load them from a separate config file? What's everyone's approach?
+              </div>
+              <div class="post-footer">
+                <div class="post-action">❤️ 6</div>
+                <div class="post-action">💬 9</div>
+                <div class="post-action">🔖 Save</div>
+              </div>
+            </div>
+
+            <!-- Post 4 -->
+            <div class="post">
+              <div class="post-header">
+                <div class="post-avatar" style="background:linear-gradient(135deg,var(--teal),#60a5fa)">AD</div>
+                <div class="post-info">
+                  <div class="post-name">
+                    Anthony Dazet
+                    <span class="post-type-badge ptb-showcase">🔥 Showcase</span>
+                  </div>
+                  <div class="post-time">Yesterday at 4:30 PM</div>
+                </div>
+              </div>
+              <div class="post-body">
+                Built a 21-agent fleet that runs an entire media empire autonomously. Content generation, digital twins, recruiting AI, community management — all Claude-powered. Documenting the whole architecture in a course dropping next week. Stay tuned. 🏗️
+              </div>
+              <div class="post-footer">
+                <div class="post-action liked">❤️ 31</div>
+                <div class="post-action">💬 14</div>
+                <div class="post-action">🔖 Save</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT SIDEBAR -->
+          <div class="sidebar-col">
+            <!-- Latest from ACDMY -->
+            <div class="widget teal-accent">
+              <div class="widget-header">📚 Latest from ACDMY</div>
+              <div class="widget-item">
+                <div class="wi-icon">📄</div>
+                <div class="wi-text">Claude System Prompts Tha...</div>
+                <div class="wi-time">1h ago</div>
+              </div>
+              <div class="widget-item">
+                <div class="wi-icon">📄</div>
+                <div class="wi-text">MCP Servers: Connect AI t...</div>
+                <div class="wi-time">1d ago</div>
+              </div>
+              <div class="widget-item">
+                <div class="wi-icon">📄</div>
+                <div class="wi-text">Automate Everything with ...</div>
+                <div class="wi-time">2d ago</div>
+              </div>
+              <div class="widget-item">
+                <div class="wi-icon">📄</div>
+                <div class="wi-text">Cursor AI: Zero to Power ...</div>
+                <div class="wi-time">3d ago</div>
+              </div>
+              <div class="widget-item">
+                <div class="wi-icon">📄</div>
+                <div class="wi-text">AI-Powered Content Machin...</div>
+                <div class="wi-time">4d ago</div>
+              </div>
+            </div>
+
+            <!-- Events & Challenges -->
+            <div class="widget amber-accent">
+              <div class="widget-header">📅 Events & Challenges</div>
+              <div class="challenge-row" style="display:flex;align-items:center;gap:8px">
+                <span>📚</span>
+                <span style="flex:1;font-size:13px">Complete 2 courses</span>
+                <span style="font-size:11px;color:var(--amber);background:var(--amber-dim);padding:2px 8px;border-radius:4px">50 pts</span>
+              </div>
+              <div class="challenge-row" style="display:flex;align-items:center;gap:8px">
+                <span>🔥</span>
+                <span style="flex:1;font-size:13px">7-day streak</span>
+                <span style="font-size:11px;color:var(--amber);background:var(--amber-dim);padding:2px 8px;border-radius:4px">40 pts</span>
+              </div>
+              <div class="challenge-row" style="display:flex;align-items:center;gap:8px">
+                <span>💬</span>
+                <span style="flex:1;font-size:13px">Help 3 people</span>
+                <span style="font-size:11px;color:var(--amber);background:var(--amber-dim);padding:2px 8px;border-radius:4px">30 pts</span>
+              </div>
+            </div>
+
+            <!-- Top Contributors -->
+            <div class="widget green-accent">
+              <div class="widget-header">🔥 Top Contributors This Week</div>
+              <div class="contrib-row">
+                <div class="contrib-avatar" style="background:linear-gradient(135deg,var(--teal),var(--blue))">AD</div>
+                <div class="contrib-name">Anthony Dazet</div>
+                <div class="contrib-count">5</div>
+              </div>
+              <div class="contrib-row">
+                <div class="contrib-avatar" style="background:linear-gradient(135deg,#60a5fa,#34d399)">SC</div>
+                <div class="contrib-name">Sarah Chen</div>
+                <div class="contrib-count">3</div>
+              </div>
+              <div class="contrib-row">
+                <div class="contrib-avatar" style="background:linear-gradient(135deg,#fbbf24,#fb7185)">MR</div>
+                <div class="contrib-name">Marcus Rivera</div>
+                <div class="contrib-count">2</div>
+              </div>
+            </div>
+
+            <!-- Community Stats -->
+            <div class="widget blue-accent">
+              <div class="widget-header">📊 Community Stats</div>
+              <div class="stats-grid">
+                <div class="stat-cell">
+                  <div class="stat-num">47</div>
+                  <div class="stat-label">Members</div>
+                </div>
+                <div class="stat-cell">
+                  <div class="stat-num">142</div>
+                  <div class="stat-label">Courses Done</div>
+                </div>
+                <div class="stat-cell">
+                  <div class="stat-num">86</div>
+                  <div class="stat-label">Posts</div>
+                </div>
+                <div class="stat-cell">
+                  <div class="stat-num">12</div>
+                  <div class="stat-label">Avg Streak</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('.sidebar-icon').forEach(i => i.classList.remove('active'));
+  if (page === 'university') document.querySelectorAll('.sidebar-icon')[0].classList.add('active');
+  if (page === 'community') document.querySelectorAll('.sidebar-icon')[4].classList.add('active');
+}
+
+document.querySelectorAll('.uni-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.uni-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+  });
+});
+
+document.querySelectorAll('.comm-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.comm-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+  });
+});
+
+document.querySelectorAll('.feed-filter').forEach(f => {
+  f.addEventListener('click', () => {
+    document.querySelectorAll('.feed-filter').forEach(ff => ff.classList.remove('active'));
+    f.classList.add('active');
+  });
+});
+
+document.querySelectorAll('.type-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.type-btn').forEach(bb => bb.className = 'type-btn');
+    const types = {'🏆 WIN':'active-win','📋 CHECK-IN':'active-checkin','❓ QUESTION':'active-question','💡 TIP':'active-tip'};
+    if (types[b.textContent]) b.classList.add(types[b.textContent]);
+  });
+});
+</script>
+
+</body>
+</html>
