@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { DM_Sans, JetBrains_Mono } from "next/font/google";
-import CAMWidget from "@/components/cam/CAMWidget";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -47,10 +46,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${dmSans.variable} ${jetbrainsMono.variable}`}>
-      <body>
-        {children}
-        <CAMWidget />
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
