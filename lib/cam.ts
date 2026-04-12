@@ -1,14 +1,21 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-// ─── Supabase client (server-side, service role) ───
-export const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+// ─── Supabase client (server-side, service role, lazy-init) ───
+let _supabaseAdmin: SupabaseClient | null = null;
+
+export function getSupabaseAdmin() {
+  if (!_supabaseAdmin) {
+    _supabaseAdmin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+  }
+  return _supabaseAdmin;
+}
 
 // ─── Fetch live course catalog from Supabase ───
 export async function getCourseCatalog() {
-  const { data: courses } = await supabaseAdmin
+  const { data: courses } = await getSupabaseAdmin()
     .from("courses")
     .select("id, title, slug, description, category, difficulty, estimated_minutes, lesson_count, is_published")
     .eq("is_published", true)
@@ -19,13 +26,13 @@ export async function getCourseCatalog() {
 
 // ─── Fetch student context ───
 export async function getStudentContext(studentId: string) {
-  const { data: student } = await supabaseAdmin
+  const { data: student } = await getSupabaseAdmin()
     .from("students")
     .select("full_name, interests, learning_goal, courses_completed, current_streak")
     .eq("id", studentId)
     .single();
 
-  const { data: enrollments } = await supabaseAdmin
+  const { data: enrollments } = await getSupabaseAdmin()
     .from("course_enrollments")
     .select("course_id, progress_percent, courses:courses(title)")
     .eq("student_id", studentId);
@@ -132,7 +139,7 @@ export async function saveConversation(
   context: string = "general"
 ) {
   if (conversationId) {
-    const { data } = await supabaseAdmin
+    const { data } = await getSupabaseAdmin()
       .from("cam_conversations")
       .update({ messages, updated_at: new Date().toISOString() })
       .eq("id", conversationId)
@@ -140,7 +147,7 @@ export async function saveConversation(
       .single();
     return data?.id;
   } else {
-    const { data } = await supabaseAdmin
+    const { data } = await getSupabaseAdmin()
       .from("cam_conversations")
       .insert({
         student_id: studentId,
@@ -165,7 +172,7 @@ export async function saveCourseDraft(
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
-  const { data } = await supabaseAdmin
+  const { data } = await getSupabaseAdmin()
     .from("cam_course_drafts")
     .insert({
       requested_by: studentId,
