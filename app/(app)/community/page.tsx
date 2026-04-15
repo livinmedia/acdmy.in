@@ -1,34 +1,62 @@
 import { createClient } from "@/lib/supabase/server";
 import Leaderboard from "@/components/community/Leaderboard";
+import CommunityFeed from "@/components/community/CommunityFeed";
 
 export const metadata = {
   title: "Community — ACDMY.in",
-  description: "Connect with AI builders. Share wins, ask questions, take on weekly challenges.",
-};
-
-const TYPE_EMOJI: Record<string, string> = {
-  win: "🏆",
-  tip: "💡",
-  question: "❓",
-  showcase: "🚀",
+  description:
+    "Connect with AI builders. Share wins, ask questions, take on weekly challenges.",
 };
 
 export default async function CommunityPage() {
   const supabase = await createClient();
 
-  const { data: posts } = await supabase
+  const { data: rawPosts } = await supabase
     .from("community_posts")
     .select(
-      "id, type, content, likes_count, comments_count, is_bot, bot_name, created_at, students:student_id(full_name, avatar_url)"
+      "id, type, content, likes_count, comments_count, is_bot, bot_name, created_at, students:student_id(full_name)"
     )
+    .is("course_id", null)
     .order("created_at", { ascending: false })
-    .limit(20);
+    .limit(30);
+
+  // Flatten student name into each post so the client component has no ambiguity
+  const posts = (rawPosts || []).map((p) => {
+    const student = p.students as unknown as {
+      full_name: string | null;
+    } | null;
+    return {
+      id: p.id as string,
+      type: p.type as string,
+      content: p.content as string,
+      likes_count: p.likes_count as number,
+      comments_count: p.comments_count as number,
+      is_bot: p.is_bot as boolean,
+      bot_name: p.bot_name as string | null,
+      created_at: p.created_at as string,
+      student_name: student?.full_name ?? null,
+    };
+  });
 
   const { data: challenges } = await supabase
     .from("community_challenges")
     .select("id, title, emoji, description, goal, points, starts_at, ends_at")
     .eq("active", true)
     .order("starts_at", { ascending: false });
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let userName: string | null = null;
+  if (user) {
+    const { data: student } = await supabase
+      .from("students")
+      .select("full_name")
+      .eq("id", user.id)
+      .single();
+    userName = student?.full_name ?? user.email ?? null;
+  }
 
   return (
     <main className="max-w-6xl mx-auto px-6 py-12">
@@ -45,71 +73,11 @@ export default async function CommunityPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8">
-        {/* Posts feed */}
-        <div className="space-y-4">
-          {posts && posts.length > 0 ? (
-            posts.map((post) => {
-              const student = post.students as unknown as { full_name: string | null; avatar_url: string | null } | null;
-              const isBot = post.is_bot && post.bot_name;
-              const authorName = isBot ? post.bot_name : (student?.full_name ?? "Anonymous");
-              const CAM_AVATAR = "https://dgfhwqutftavhlujmrwv.supabase.co/storage/v1/object/public/cam-assets/cam-photo.png";
-
-              return (
-                <article
-                  key={post.id}
-                  className="bg-[#111114] border border-[#222228] rounded-2xl p-5 hover:border-[#333340] transition-colors"
-                >
-                  <div className="flex items-center gap-3 mb-3">
-                    {isBot ? (
-                      <img
-                        src={CAM_AVATAR}
-                        alt={post.bot_name!}
-                        className="w-8 h-8 rounded-full object-cover shrink-0"
-                      />
-                    ) : (
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#7c6cf0] to-[#5bbfef] flex items-center justify-center text-xs font-bold text-white shrink-0">
-                        {(authorName || "?")[0].toUpperCase()}
-                      </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-white truncate">
-                        {authorName}
-                        {isBot && (
-                          <span className="ml-1.5 text-[10px] font-medium text-[#a78bfa] bg-[#a78bfa]/10 px-1.5 py-0.5 rounded">
-                            BOT
-                          </span>
-                        )}
-                      </p>
-                      <p className="text-[11px] text-[#55545e]">
-                        {new Date(post.created_at).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                        })}
-                      </p>
-                    </div>
-                    <span className="text-lg">{TYPE_EMOJI[post.type] ?? "💬"}</span>
-                  </div>
-
-                  <p className="text-sm text-[#f0eff4] leading-relaxed whitespace-pre-wrap">
-                    {post.content}
-                  </p>
-
-                  <div className="flex gap-4 mt-3 text-[11px] text-[#55545e] font-[family-name:var(--font-jetbrains)]">
-                    <span>{post.likes_count} likes</span>
-                    <span>{post.comments_count} comments</span>
-                  </div>
-                </article>
-              );
-            })
-          ) : (
-            <div className="bg-[#111114] border border-[#222228] rounded-2xl p-8 text-center">
-              <p className="text-2xl mb-2">🌱</p>
-              <p className="text-sm text-[#8a8994]">
-                No posts yet. Be the first to share something.
-              </p>
-            </div>
-          )}
-        </div>
+        <CommunityFeed
+          initialPosts={posts}
+          userId={user?.id ?? null}
+          userName={userName}
+        />
 
         {/* Sidebar: Leaderboard + Challenges */}
         <aside className="space-y-6">
