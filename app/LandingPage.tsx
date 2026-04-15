@@ -1,32 +1,4 @@
-"use client";
-
-import { useRef } from "react";
-
 export default function LandingPage() {
-  const emailRef = useRef<HTMLInputElement>(null);
-  const joinRef = useRef<HTMLDivElement>(null);
-
-  function scrollToJoin() {
-    joinRef.current?.scrollIntoView({ behavior: "smooth" });
-  }
-
-  function handleJoin() {
-    const input = emailRef.current;
-    if (!input) return;
-    const email = input.value;
-    if (!email || !email.includes("@")) {
-      input.style.borderColor = "#ef4444";
-      return;
-    }
-    input.style.borderColor = "#34d399";
-    input.disabled = true;
-    const btn = input.parentElement?.querySelector("button");
-    if (btn) {
-      btn.textContent = "\u2713 You're in!";
-      btn.style.background = "#34d399";
-    }
-  }
-
   return (
     <>
       <style>{`
@@ -336,7 +308,8 @@ export default function LandingPage() {
           <a href="#courses">Courses</a>
           <a href="#features">Features</a>
           <a href="#pricing">Pricing</a>
-          <a href="#join" className="lp-nav-cta">Join Waitlist</a>
+          <a href="/login">Sign In</a>
+          <a href="/signup" className="lp-nav-cta">Sign Up</a>
         </div>
       </nav>
 
@@ -345,7 +318,7 @@ export default function LandingPage() {
         <h1 className="lp-h1">Learn AI.<br /><span className="gradient">Build with it.</span></h1>
         <p className="lp-subtitle">A new hands-on AI course drops every single day. Video lessons, interactive exercises, AI mentor, and a community of builders. $25/mo.</p>
         <div className="lp-hero-cta-row">
-          <button className="lp-btn-primary" onClick={scrollToJoin}>Start Learning — $25/mo</button>
+          <a href="/signup" className="lp-btn-primary" style={{ textDecoration: "none", display: "inline-block" }}>Start Learning — $25/mo</a>
         </div>
         <p className="lp-hero-proof"><strong>365 courses/year</strong> · Video + text · Interactive exercises · AI mentor</p>
       </div>
@@ -475,18 +448,14 @@ export default function LandingPage() {
             <li>Shareable certificates</li>
             <li>Full course library access</li>
           </ul>
-          <button className="lp-pricing-btn" onClick={scrollToJoin}>Join Waitlist</button>
+          <a href="/signup" className="lp-pricing-btn" style={{ textDecoration: "none", display: "inline-block" }}>Get Started</a>
         </div>
       </section>
 
-      <div className="lp-cta-section" ref={joinRef} id="join">
+      <div className="lp-cta-section" id="join">
         <h2>Start learning <span style={{ color: "var(--accent)" }}>today</span>.</h2>
-        <p>Drop your email. We&apos;ll send you access as soon as we open.</p>
-        <div className="lp-email-form">
-          <input type="email" placeholder="your@email.com" ref={emailRef} />
-          <button className="lp-btn-primary" onClick={handleJoin}>Join Waitlist</button>
-        </div>
-        <p className="lp-hero-proof" style={{ marginTop: 16 }}><strong>No spam.</strong> Just a launch date.</p>
+        <p>New courses drop every day. Join now and start building with AI.</p>
+        <a href="/signup" className="lp-btn-primary" style={{ textDecoration: "none", display: "inline-block" }}>Create Account — $25/mo</a>
       </div>
 
       <footer className="lp-footer">

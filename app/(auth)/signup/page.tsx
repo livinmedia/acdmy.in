@@ -24,7 +24,7 @@ export default function SignupPage() {
       password,
       options: {
         data: { full_name: fullName },
-        emailRedirectTo: "https://www.acdmy.in/api/auth/callback",
+        emailRedirectTo: "https://acdmy.in/api/auth/callback",
       },
     });
 
@@ -32,7 +32,7 @@ export default function SignupPage() {
       setError(error.message);
       setLoading(false);
     } else {
-      router.push("/courses");
+      router.push("/subscribe");
       router.refresh();
     }
   }

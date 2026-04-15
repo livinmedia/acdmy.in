@@ -1,5 +1,5 @@
 import CAMChat from "@/components/cam/CAMChat";
-// import { auth } from "@/lib/auth"; // uncomment when auth is wired up
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata = {
   title: "CAM — AI Instructor | ACDMY.in",
@@ -8,10 +8,9 @@ export const metadata = {
 };
 
 export default async function CAMPage() {
-  // TODO: Get authenticated student ID from your auth setup
-  // const session = await auth();
-  // const studentId = session?.user?.id;
-  const studentId = undefined; // remove this line when auth is ready
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const studentId = user?.id;
 
   return (
     <div className="h-screen bg-[#0a0a10] flex flex-col">

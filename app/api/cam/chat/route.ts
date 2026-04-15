@@ -6,6 +6,7 @@ import {
   saveConversation,
   saveCourseDraft,
 } from "@/lib/cam";
+import { createClient } from "@/lib/supabase/server";
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
@@ -13,7 +14,15 @@ const anthropic = new Anthropic({
 
 export async function POST(req: NextRequest) {
   try {
-    const { messages, studentId, conversationId } = await req.json();
+    // Authenticate — never trust client-provided studentId
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const studentId = user.id;
+
+    const { messages, conversationId } = await req.json();
 
     if (!messages || !Array.isArray(messages)) {
       return NextResponse.json({ error: "Messages required" }, { status: 400 });

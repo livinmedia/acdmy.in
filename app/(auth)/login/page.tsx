@@ -27,7 +27,9 @@ export default function LoginPage() {
       setError(error.message);
       setLoading(false);
     } else {
-      router.push("/courses");
+      const params = new URLSearchParams(window.location.search);
+      const next = params.get("next") || "/courses";
+      router.push(next);
       router.refresh();
     }
   }
