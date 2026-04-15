@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import EnrollButton from "./EnrollButton";
+import CourseResources from "@/components/courses/CourseResources";
 
 const DIFFICULTY_COLORS: Record<string, string> = {
   beginner: "text-[#34d399] bg-[#34d399]/10 border-[#34d399]/20",
@@ -45,6 +46,12 @@ export default async function CourseDetailPage({
   const { data: lessons } = await supabase
     .from("course_lessons")
     .select("id, title, slug, sort_order, lesson_type, estimated_minutes, video_youtube_id")
+    .eq("course_id", course.id)
+    .order("sort_order", { ascending: true });
+
+  const { data: resources } = await supabase
+    .from("course_resources")
+    .select("id, title, description, file_url, file_type")
     .eq("course_id", course.id)
     .order("sort_order", { ascending: true });
 
@@ -170,6 +177,8 @@ export default async function CourseDetailPage({
           <p className="text-sm text-[#55545e]">Lessons coming soon.</p>
         )}
       </div>
+
+      <CourseResources resources={resources || []} />
     </main>
   );
 }

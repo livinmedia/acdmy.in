@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import LessonCompleteButton from "@/components/lessons/LessonCompleteButton";
 import LessonQuiz from "@/components/lessons/LessonQuiz";
+import PromptPlayground from "@/components/lessons/PromptPlayground";
 
 export async function generateMetadata({
   params,
@@ -171,6 +172,14 @@ export default async function LessonPage({
           }
           lessonId={lesson.id}
           userId={user?.id ?? null}
+        />
+      )}
+
+      {/* Prompt Playground */}
+      {user && (
+        <PromptPlayground
+          lessonContext={lesson.title}
+          lessonId={lesson.id}
         />
       )}
 

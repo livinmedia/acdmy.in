@@ -26,18 +26,44 @@ export async function getCourseCatalog() {
 
 // ─── Fetch student context ───
 export async function getStudentContext(studentId: string) {
-  const { data: student } = await getSupabaseAdmin()
+  const db = getSupabaseAdmin();
+
+  const { data: student } = await db
     .from("students")
     .select("full_name, interests, learning_goal, courses_completed, current_streak")
     .eq("id", studentId)
     .single();
 
-  const { data: enrollments } = await getSupabaseAdmin()
+  const { data: enrollments } = await db
     .from("course_enrollments")
     .select("course_id, progress_percent, courses:courses(title)")
     .eq("student_id", studentId);
 
-  return { student, enrollments: enrollments || [] };
+  const { count: lessonsCompleted } = await db
+    .from("course_lesson_progress")
+    .select("id", { count: "exact", head: true })
+    .eq("student_id", studentId)
+    .eq("completed", true);
+
+  const { data: recentQuizzes } = await db
+    .from("quiz_attempts")
+    .select("score, total, course_lessons:lesson_id(title, courses:course_id(title))")
+    .eq("student_id", studentId)
+    .order("completed_at", { ascending: false })
+    .limit(10);
+
+  const { data: badges } = await db
+    .from("student_badges")
+    .select("badge_type")
+    .eq("student_id", studentId);
+
+  return {
+    student,
+    enrollments: enrollments || [],
+    lessonsCompleted: lessonsCompleted || 0,
+    recentQuizzes: recentQuizzes || [],
+    badges: badges || [],
+  };
 }
 
 // ─── Build CAM's system prompt ───
@@ -46,16 +72,44 @@ export async function buildSystemPrompt(studentId?: string) {
   let studentContext = "";
 
   if (studentId) {
-    const { student, enrollments } = await getStudentContext(studentId);
+    const { student, enrollments, lessonsCompleted, recentQuizzes, badges } =
+      await getStudentContext(studentId);
     if (student) {
+      const quizSummary =
+        recentQuizzes.length > 0
+          ? recentQuizzes
+              .map((q: any) => {
+                const lessonTitle = q.course_lessons?.title || "a lesson";
+                return `  • ${lessonTitle}: ${q.score}/${q.total}`;
+              })
+              .join("\n")
+          : "  (no quizzes taken yet)";
+
+      const badgeList =
+        badges.length > 0
+          ? badges.map((b: any) => b.badge_type).join(", ")
+          : "none yet";
+
       studentContext = `
 CURRENT STUDENT:
 - Name: ${student.full_name || "Unknown"}
 - Learning goal: ${student.learning_goal || "Not set"}
 - Interests: ${JSON.stringify(student.interests || [])}
 - Courses completed: ${student.courses_completed || 0}
+- Lessons completed: ${lessonsCompleted}
 - Current streak: ${student.current_streak || 0} days
+- Badges earned: ${badgeList}
 - Currently enrolled in: ${enrollments.map((e: any) => `"${e.courses?.title}" (${e.progress_percent}%)`).join(", ") || "Nothing yet"}
+
+RECENT QUIZ SCORES:
+${quizSummary}
+
+PERSONALIZATION RULES:
+- Reference their specific progress and quiz performance when relevant
+- If they scored low on a quiz (below 70%), gently offer to help with that topic
+- If they completed a course, congratulate them and suggest a logical next one
+- If they haven't started any courses, help them pick based on their interests
+- Celebrate new badges and milestones when they come up naturally
 `;
     }
   }
