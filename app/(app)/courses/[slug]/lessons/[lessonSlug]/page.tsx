@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import LessonCompleteButton from "@/components/lessons/LessonCompleteButton";
+import LessonQuiz from "@/components/lessons/LessonQuiz";
 
 export async function generateMetadata({
   params,
@@ -92,6 +93,13 @@ export default async function LessonPage({
 
   const totalLessons = allLessons?.length ?? 0;
 
+  // Fetch quiz questions for this lesson
+  const { data: quizzes } = await supabase
+    .from("lesson_quizzes")
+    .select("id, question, options, correct_index, explanation, sort_order")
+    .eq("lesson_id", lesson.id)
+    .order("sort_order", { ascending: true });
+
   const LESSON_TYPE_STYLES: Record<string, string> = {
     article: "text-[#60a5fa] bg-[#60a5fa]/10 border-[#60a5fa]/20",
     interactive: "text-[#f472b6] bg-[#f472b6]/10 border-[#f472b6]/20",
@@ -146,6 +154,24 @@ export default async function LessonPage({
         <div className="bg-[#111114] border border-[#222228] rounded-2xl p-8 text-center">
           <p className="text-sm text-[#8a8994]">Lesson content coming soon.</p>
         </div>
+      )}
+
+      {/* Quiz */}
+      {quizzes && quizzes.length > 0 && (
+        <LessonQuiz
+          quizzes={
+            quizzes as Array<{
+              id: string;
+              question: string;
+              options: string[];
+              correct_index: number;
+              explanation: string | null;
+              sort_order: number | null;
+            }>
+          }
+          lessonId={lesson.id}
+          userId={user?.id ?? null}
+        />
       )}
 
       {/* Complete + Navigation */}
