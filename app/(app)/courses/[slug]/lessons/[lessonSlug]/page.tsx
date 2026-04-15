@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import LessonCompleteButton from "@/components/lessons/LessonCompleteButton";
 
 export async function generateMetadata({
   params,
@@ -73,6 +74,24 @@ export default async function LessonPage({
       ? allLessons[currentIndex + 1]
       : null;
 
+  // Get user + completion status
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let isCompleted = false;
+  if (user) {
+    const { data: progress } = await supabase
+      .from("course_lesson_progress")
+      .select("completed")
+      .eq("student_id", user.id)
+      .eq("lesson_id", lesson.id)
+      .maybeSingle();
+    isCompleted = !!progress?.completed;
+  }
+
+  const totalLessons = allLessons?.length ?? 0;
+
   const LESSON_TYPE_STYLES: Record<string, string> = {
     article: "text-[#60a5fa] bg-[#60a5fa]/10 border-[#60a5fa]/20",
     interactive: "text-[#f472b6] bg-[#f472b6]/10 border-[#f472b6]/20",
@@ -116,19 +135,11 @@ export default async function LessonPage({
       {/* Content */}
       {lesson.content_html ? (
         <div
-          className="prose prose-invert prose-sm max-w-none
-            prose-headings:text-white prose-headings:font-semibold
-            prose-p:text-[#c4c3cc] prose-p:leading-relaxed
-            prose-a:text-[#a78bfa] prose-a:no-underline hover:prose-a:underline
-            prose-code:text-[#f472b6] prose-code:bg-[#1a1a24] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
-            prose-pre:bg-[#111114] prose-pre:border prose-pre:border-[#222228] prose-pre:rounded-xl
-            prose-strong:text-white
-            prose-li:text-[#c4c3cc]
-            prose-blockquote:border-[#a78bfa]/30 prose-blockquote:text-[#8a8994]"
+          className="lesson-content"
           dangerouslySetInnerHTML={{ __html: lesson.content_html }}
         />
       ) : lesson.content_markdown ? (
-        <div className="text-sm text-[#c4c3cc] leading-relaxed whitespace-pre-wrap">
+        <div className="lesson-content whitespace-pre-wrap">
           {lesson.content_markdown}
         </div>
       ) : (
@@ -137,38 +148,52 @@ export default async function LessonPage({
         </div>
       )}
 
-      {/* Prev / Next navigation */}
-      <div className="flex items-center justify-between mt-12 pt-8 border-t border-[#222228]">
-        {prevLesson ? (
-          <Link
-            href={`/courses/${slug}/lessons/${prevLesson.slug}`}
-            className="group flex flex-col"
-          >
-            <span className="text-[11px] text-[#55545e] font-[family-name:var(--font-jetbrains)] mb-1">
-              &larr; Previous
-            </span>
-            <span className="text-sm text-[#8a8994] group-hover:text-white transition-colors">
-              {prevLesson.title}
-            </span>
-          </Link>
-        ) : (
-          <div />
+      {/* Complete + Navigation */}
+      <div className="mt-12 pt-8 border-t border-white/10">
+        {/* Mark complete button */}
+        {user && (
+          <div className="mb-6">
+            <LessonCompleteButton
+              lessonId={lesson.id}
+              courseId={course.id}
+              userId={user.id}
+              isCompleted={isCompleted}
+              totalLessons={totalLessons}
+            />
+          </div>
         )}
-        {nextLesson ? (
+      </div>
+
+      {/* Prev / Next navigation */}
+      <div className="">
+        {/* Next lesson — prominent on mobile */}
+        {nextLesson && (
           <Link
             href={`/courses/${slug}/lessons/${nextLesson.slug}`}
-            className="group flex flex-col items-end"
+            className="block w-full py-3 rounded-xl border border-white/20 text-center text-white/80 hover:bg-white/5 hover:border-white/30 transition-all mb-4"
           >
-            <span className="text-[11px] text-[#55545e] font-[family-name:var(--font-jetbrains)] mb-1">
-              Next &rarr;
-            </span>
-            <span className="text-sm text-[#8a8994] group-hover:text-white transition-colors">
-              {nextLesson.title}
-            </span>
+            Next: {nextLesson.title} &rarr;
           </Link>
-        ) : (
-          <div />
         )}
+
+        {/* Prev link — subtle */}
+        <div className="flex items-center justify-between">
+          {prevLesson ? (
+            <Link
+              href={`/courses/${slug}/lessons/${prevLesson.slug}`}
+              className="group flex flex-col"
+            >
+              <span className="text-[11px] text-[#55545e] font-[family-name:var(--font-jetbrains)] mb-1">
+                &larr; Previous
+              </span>
+              <span className="text-sm text-[#8a8994] group-hover:text-white transition-colors">
+                {prevLesson.title}
+              </span>
+            </Link>
+          ) : (
+            <div />
+          )}
+        </div>
       </div>
     </article>
   );

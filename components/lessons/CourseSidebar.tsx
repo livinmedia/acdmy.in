@@ -52,6 +52,29 @@ export default function CourseSidebar({
       {/* Desktop sidebar */}
       <aside className="hidden lg:block">
         <div className="sticky top-20 space-y-6 max-h-[calc(100vh-6rem)] overflow-y-auto pb-8 scrollbar-thin">
+          {/* Progress bar */}
+          <div>
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm text-white/60">Course progress</span>
+              <span className="text-sm font-medium text-white/80">
+                {completedLessonIds.length}/{lessons.length}
+              </span>
+            </div>
+            <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-[#34d399] rounded-full transition-all duration-500"
+                style={{
+                  width: `${lessons.length > 0 ? (completedLessonIds.length / lessons.length) * 100 : 0}%`,
+                }}
+              />
+            </div>
+            <p className="text-xs text-white/40 mt-1.5">
+              {lessons.length > 0
+                ? `${Math.round((completedLessonIds.length / lessons.length) * 100)}% complete`
+                : "No lessons yet"}
+            </p>
+          </div>
+
           <VideoPlayer
             videoUrl={course.intro_video_url}
             youtubeId={course.intro_video_youtube_id}

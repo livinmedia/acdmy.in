@@ -16,6 +16,11 @@ const CATEGORY_EMOJI: Record<string, string> = {
   rag: "🔍",
   "fine-tuning": "🔧",
   mlops: "🚀",
+  building: "🔨",
+  tools: "🔧",
+  automation: "⚡",
+  "real-estate": "🏠",
+  business: "⚡",
 };
 
 const DIFFICULTY_COLORS: Record<string, string> = {
@@ -71,7 +76,8 @@ export default function CourseCard({
       )}
       <div className="p-5">
         <div className="flex items-center gap-2 mb-2">
-          <span className="font-[family-name:var(--font-jetbrains)] text-[10px] uppercase tracking-wider text-[#a78bfa]">
+          <span className="font-[family-name:var(--font-jetbrains)] text-[10px] uppercase tracking-wider text-[#a78bfa] flex items-center gap-1.5">
+            <span className="text-xs">{emoji}</span>
             {category}
           </span>
           <span
