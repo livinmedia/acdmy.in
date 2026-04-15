@@ -10,10 +10,14 @@ interface Post {
   content: string;
   created_at: string;
   is_bot: boolean;
+  bot_name: string | null;
   likes_count: number;
   comments_count: number;
   students: { full_name: string | null; avatar_url: string | null } | null;
 }
+
+const CAM_AVATAR =
+  "https://dgfhwqutftavhlujmrwv.supabase.co/storage/v1/object/public/cam-assets/cam-photo.png";
 
 interface CourseDiscussionProps {
   courseId: string;
@@ -45,9 +49,11 @@ export default function CourseDiscussion({
         content: content.trim(),
         type: "tip",
         category: "discussion",
+        is_bot: false,
+        bot_name: null,
       })
       .select(
-        "id, content, created_at, is_bot, likes_count, comments_count, students:student_id(full_name, avatar_url)"
+        "id, content, created_at, is_bot, bot_name, likes_count, comments_count, students:student_id(full_name, avatar_url)"
       )
       .single();
 
@@ -93,18 +99,31 @@ export default function CourseDiscussion({
               full_name: string | null;
               avatar_url: string | null;
             } | null;
+            const isBot = post.is_bot && post.bot_name;
+            const authorName = isBot
+              ? post.bot_name
+              : (student?.full_name ?? "Anonymous");
+
             return (
               <div
                 key={post.id}
                 className="bg-[#111114] border border-[#222228] rounded-lg p-3"
               >
                 <div className="flex items-center gap-2 mb-1.5">
-                  <div className="w-5 h-5 rounded-full bg-gradient-to-br from-[#7c6cf0] to-[#5bbfef] flex items-center justify-center text-[9px] font-bold text-white shrink-0">
-                    {student?.full_name?.[0]?.toUpperCase() ?? "?"}
-                  </div>
+                  {isBot ? (
+                    <img
+                      src={CAM_AVATAR}
+                      alt={post.bot_name!}
+                      className="w-5 h-5 rounded-full object-cover shrink-0"
+                    />
+                  ) : (
+                    <div className="w-5 h-5 rounded-full bg-gradient-to-br from-[#7c6cf0] to-[#5bbfef] flex items-center justify-center text-[9px] font-bold text-white shrink-0">
+                      {(authorName || "?")[0].toUpperCase()}
+                    </div>
+                  )}
                   <span className="text-xs font-medium text-white truncate">
-                    {student?.full_name ?? "Anonymous"}
-                    {post.is_bot && (
+                    {authorName}
+                    {isBot && (
                       <span className="ml-1 text-[9px] text-[#a78bfa] bg-[#a78bfa]/10 px-1 py-0.5 rounded">
                         BOT
                       </span>

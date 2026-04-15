@@ -46,7 +46,7 @@ export default async function LessonsLayout({
   const { data: posts } = await supabase
     .from("community_posts")
     .select(
-      "id, content, created_at, is_bot, likes_count, comments_count, students:student_id(full_name, avatar_url)"
+      "id, content, created_at, is_bot, bot_name, likes_count, comments_count, students:student_id(full_name, avatar_url)"
     )
     .eq("course_id", course.id)
     .order("created_at", { ascending: false })
@@ -72,6 +72,7 @@ export default async function LessonsLayout({
             content: string;
             created_at: string;
             is_bot: boolean;
+            bot_name: string | null;
             likes_count: number;
             comments_count: number;
             students: { full_name: string | null; avatar_url: string | null } | null;

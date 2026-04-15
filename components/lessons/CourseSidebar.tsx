@@ -19,6 +19,7 @@ interface Post {
   content: string;
   created_at: string;
   is_bot: boolean;
+  bot_name: string | null;
   likes_count: number;
   comments_count: number;
   students: { full_name: string | null; avatar_url: string | null } | null;

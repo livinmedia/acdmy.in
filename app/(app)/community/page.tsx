@@ -19,7 +19,7 @@ export default async function CommunityPage() {
   const { data: posts } = await supabase
     .from("community_posts")
     .select(
-      "id, type, content, likes_count, comments_count, is_bot, created_at, students:student_id(full_name, avatar_url)"
+      "id, type, content, likes_count, comments_count, is_bot, bot_name, created_at, students:student_id(full_name, avatar_url)"
     )
     .order("created_at", { ascending: false })
     .limit(20);
@@ -50,19 +50,31 @@ export default async function CommunityPage() {
           {posts && posts.length > 0 ? (
             posts.map((post) => {
               const student = post.students as unknown as { full_name: string | null; avatar_url: string | null } | null;
+              const isBot = post.is_bot && post.bot_name;
+              const authorName = isBot ? post.bot_name : (student?.full_name ?? "Anonymous");
+              const CAM_AVATAR = "https://dgfhwqutftavhlujmrwv.supabase.co/storage/v1/object/public/cam-assets/cam-photo.png";
+
               return (
                 <article
                   key={post.id}
                   className="bg-[#111114] border border-[#222228] rounded-2xl p-5 hover:border-[#333340] transition-colors"
                 >
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#7c6cf0] to-[#5bbfef] flex items-center justify-center text-xs font-bold text-white shrink-0">
-                      {student?.full_name?.[0]?.toUpperCase() ?? "?"}
-                    </div>
+                    {isBot ? (
+                      <img
+                        src={CAM_AVATAR}
+                        alt={post.bot_name!}
+                        className="w-8 h-8 rounded-full object-cover shrink-0"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#7c6cf0] to-[#5bbfef] flex items-center justify-center text-xs font-bold text-white shrink-0">
+                        {(authorName || "?")[0].toUpperCase()}
+                      </div>
+                    )}
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-white truncate">
-                        {student?.full_name ?? "Anonymous"}
-                        {post.is_bot && (
+                        {authorName}
+                        {isBot && (
                           <span className="ml-1.5 text-[10px] font-medium text-[#a78bfa] bg-[#a78bfa]/10 px-1.5 py-0.5 rounded">
                             BOT
                           </span>
