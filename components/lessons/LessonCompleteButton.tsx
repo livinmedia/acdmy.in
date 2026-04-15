@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { checkAndAwardBadges } from "@/lib/badges";
+import BadgeToast from "@/components/ui/BadgeToast";
 
 interface LessonCompleteButtonProps {
   lessonId: string;
@@ -20,6 +22,7 @@ export default function LessonCompleteButton({
 }: LessonCompleteButtonProps) {
   const [completed, setCompleted] = useState(initialCompleted);
   const [loading, setLoading] = useState(false);
+  const [newBadges, setNewBadges] = useState<string[]>([]);
 
   async function markComplete() {
     if (completed || loading) return;
@@ -65,28 +68,35 @@ export default function LessonCompleteButton({
       .eq("student_id", userId)
       .eq("course_id", courseId);
 
+    // Check and award badges
+    const awarded = await checkAndAwardBadges(userId);
+    if (awarded.length > 0) setNewBadges(awarded);
+
     setCompleted(true);
     setLoading(false);
   }
 
   if (completed) {
     return (
-      <div className="flex items-center justify-center gap-2 py-3 text-[#34d399] font-medium">
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2}
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-        Lesson Complete
-      </div>
+      <>
+        <BadgeToast badgeTypes={newBadges} />
+        <div className="flex items-center justify-center gap-2 py-3 text-[#34d399] font-medium">
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          Lesson Complete
+        </div>
+      </>
     );
   }
 

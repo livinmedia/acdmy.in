@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { checkAndAwardBadges } from "@/lib/badges";
+import BadgeToast from "@/components/ui/BadgeToast";
 
 interface Post {
   id: string;
@@ -27,6 +29,7 @@ export default function CourseDiscussion({
   const [posts, setPosts] = useState(initialPosts);
   const [content, setContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [newBadges, setNewBadges] = useState<string[]>([]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -51,12 +54,17 @@ export default function CourseDiscussion({
     if (!error && data) {
       setPosts([data as unknown as Post, ...posts]);
       setContent("");
+
+      // Check for new badges after posting
+      const awarded = await checkAndAwardBadges(userId);
+      if (awarded.length > 0) setNewBadges(awarded);
     }
     setSubmitting(false);
   }
 
   return (
     <div>
+      <BadgeToast badgeTypes={newBadges} />
       <h3 className="text-sm font-semibold text-white mb-3">Discussion</h3>
 
       {userId && (

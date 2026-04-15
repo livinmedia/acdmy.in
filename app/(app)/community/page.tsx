@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import Leaderboard from "@/components/community/Leaderboard";
 
 export const metadata = {
   title: "Community — ACDMY.in",
@@ -98,8 +99,10 @@ export default async function CommunityPage() {
           )}
         </div>
 
-        {/* Challenges sidebar */}
-        <aside className="space-y-4">
+        {/* Sidebar: Leaderboard + Challenges */}
+        <aside className="space-y-6">
+          <Leaderboard />
+
           <h2 className="text-sm font-semibold text-white flex items-center gap-2">
             <span className="text-base">🎯</span> Active Challenges
           </h2>
