@@ -32,6 +32,7 @@ interface CourseCardProps {
   difficulty: string;
   lesson_count: number;
   estimated_minutes: number;
+  thumbnail_url?: string | null;
 }
 
 export default function CourseCard({
@@ -42,6 +43,7 @@ export default function CourseCard({
   difficulty,
   lesson_count,
   estimated_minutes,
+  thumbnail_url,
 }: CourseCardProps) {
   const gradient = CATEGORY_GRADIENTS[category] ?? "from-[#1a1040] to-[#2d1b69]";
   const emoji = CATEGORY_EMOJI[category] ?? "📚";
@@ -52,11 +54,21 @@ export default function CourseCard({
       href={`/courses/${slug}`}
       className="group bg-[#111114] border border-[#222228] rounded-2xl overflow-hidden hover:border-[#333340] hover:-translate-y-0.5 transition-all"
     >
-      <div
-        className={`h-36 bg-gradient-to-br ${gradient} flex items-center justify-center text-5xl`}
-      >
-        {emoji}
-      </div>
+      {thumbnail_url ? (
+        <div className="h-36 overflow-hidden">
+          <img
+            src={thumbnail_url}
+            alt={title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        </div>
+      ) : (
+        <div
+          className={`h-36 bg-gradient-to-br ${gradient} flex items-center justify-center text-5xl`}
+        >
+          {emoji}
+        </div>
+      )}
       <div className="p-5">
         <div className="flex items-center gap-2 mb-2">
           <span className="font-[family-name:var(--font-jetbrains)] text-[10px] uppercase tracking-wider text-[#a78bfa]">

@@ -11,7 +11,7 @@ export default async function CoursesPage() {
   const { data: courses } = await supabase
     .from("courses")
     .select(
-      "slug, title, description, category, difficulty, lesson_count, estimated_minutes"
+      "slug, title, description, category, difficulty, lesson_count, estimated_minutes, thumbnail_url"
     )
     .eq("is_published", true)
     .order("created_at", { ascending: false });
