@@ -20,7 +20,21 @@ export default async function CommunityPage() {
     .order("created_at", { ascending: false })
     .limit(30);
 
-  // Flatten student name into each post so the client component has no ambiguity
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // Fetch which posts the current user has liked
+  let likedPostIds = new Set<string>();
+  if (user) {
+    const { data: likes } = await supabase
+      .from("community_likes")
+      .select("post_id")
+      .eq("student_id", user.id);
+    likedPostIds = new Set((likes || []).map((l: { post_id: string }) => l.post_id));
+  }
+
+  // Flatten student name + liked_by_me into each post
   const posts = (rawPosts || []).map((p) => {
     const student = p.students as unknown as {
       full_name: string | null;
@@ -35,6 +49,7 @@ export default async function CommunityPage() {
       bot_name: p.bot_name as string | null,
       created_at: p.created_at as string,
       student_name: student?.full_name ?? null,
+      liked_by_me: likedPostIds.has(p.id as string),
     };
   });
 
@@ -43,10 +58,6 @@ export default async function CommunityPage() {
     .select("id, title, emoji, description, goal, points, starts_at, ends_at")
     .eq("active", true)
     .order("starts_at", { ascending: false });
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
 
   let userName: string | null = null;
   if (user) {

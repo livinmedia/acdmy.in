@@ -4,6 +4,8 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { checkAndAwardBadges } from "@/lib/badges";
 import BadgeToast from "@/components/ui/BadgeToast";
+import LikeButton from "@/components/community/LikeButton";
+import CommentSection from "@/components/community/CommentSection";
 
 const CAM_AVATAR =
   "https://dgfhwqutftavhlujmrwv.supabase.co/storage/v1/object/public/cam-assets/cam-photo.png";
@@ -25,6 +27,7 @@ interface Post {
   bot_name: string | null;
   created_at: string;
   student_name: string | null;
+  liked_by_me: boolean;
 }
 
 interface CommunityFeedProps {
@@ -63,7 +66,7 @@ export default function CommunityFeed({
 
     if (!error && data) {
       setPosts([
-        { ...data, student_name: userName } as Post,
+        { ...data, student_name: userName, liked_by_me: false } as Post,
         ...posts,
       ]);
       setContent("");
@@ -149,9 +152,18 @@ export default function CommunityFeed({
                 {post.content}
               </p>
 
-              <div className="flex gap-4 mt-3 text-[11px] text-[#55545e] font-[family-name:var(--font-jetbrains)]">
-                <span>{post.likes_count} likes</span>
-                <span>{post.comments_count} comments</span>
+              <div className="flex items-center gap-4 mt-4 pt-3 border-t border-white/5">
+                <LikeButton
+                  postId={post.id}
+                  initialCount={post.likes_count}
+                  initialLiked={post.liked_by_me}
+                  studentId={userId}
+                />
+                <CommentSection
+                  postId={post.id}
+                  initialCount={post.comments_count}
+                  studentId={userId}
+                />
               </div>
             </article>
           );
